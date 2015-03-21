@@ -37,6 +37,19 @@ Use it to drive test scenarios that are too tricky for mocks and stubs:
     requests.get('http://localhost:12345/recipes/1/ingredients')
       .response.code.should.be.equal(200);
 
+Configure responses with JSON or Javascript:
+
+    // token-handler.js
+
+    module.exports = function (request, reply) {
+      if (request.payload.email === 'test@example.json' &&
+          request.payload.password === 'password') {
+        jsonReply('token.json');
+      } else {
+        jsonReply('not-authorized.json', {code: 401});    
+      }
+    };
+
 
 Install
 ---
