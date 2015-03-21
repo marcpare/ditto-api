@@ -13,6 +13,31 @@ Key features
 * Controlled via HTTP so that you can use it from any language
 * Stateful interactions
 
+Use it to build out your front-end while the back-end is under development or unreliable.
+
+Use it to drive test scenarios that are too tricky for mocks and stubs:
+
+    var ditto = require('ditto-api');
+    ditto.start({
+      port: 12345,
+      config: 'config/ditto.json'
+    });
+    
+    ditto.route("recipes-ingredients-fail.json", {
+      times: 1
+    });
+    
+    ditto.route("recipes-ingredients-ok.json", {
+      times: 1
+    });
+    
+    requests.get('http://localhost:12345/recipes/1/ingredients')
+      .response.code.should.be.equal(404);
+    
+    requests.get('http://localhost:12345/recipes/1/ingredients')
+      .response.code.should.be.equal(200);
+
+
 Install
 ---
 
