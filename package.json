@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/marcpare/ditto-api/issues"
   },
-  "homepage": "https://github.com/marcpare/ditto-api"
+  "homepage": "https://github.com/marcpare/ditto-api",
+  "dependencies": {
+    "hapi": "^8.4.0"
+  }
 }

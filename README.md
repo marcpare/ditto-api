@@ -16,14 +16,30 @@ Key features
 Install
 ---
 
+    npm install -g ditto-api
 
 Run
 ---
 
+    ditto-api -p 34567 -c ditto.json
+    
+Command line options
+
+* p (port): which port to bind the server to
+* c (config): server configuration file
+    
 
 Configure
 ---
 
+
+`handler`: Javascript file which is required and run as a handler.
+
+**Handler API**
+
+Handlers have access to some global convenience functions
+
+* `jsonReply(filename, options)`
 
 Examples
 ---
@@ -33,10 +49,38 @@ Test
 ---
 
 
-Client Libraries
+Client API
 ---
 
-Javascript:
+**Javascript**
+
+Loads a route from a JSON file (relative to the configuration file location). Overrides the handler for an existing route with the same method and path.
+
+    fakeApi.route("recipes-ingredients-fail.json");
+
+Options:
+
+`times`: Respond with the new route `times` number of times. Then revert to previous. Can stack up multiple calls like this.
+
+    fakeApi.route("recipes-ingredients-fail.json", {
+      times: 1
+    });
+    
+    fakeApi.route("recipes-ingredients-ok.json", {
+      times: 2
+    });
+    
+    fakeApi.route("recipes-ingredients-fail.json", {
+      times: 3
+    });
+    
+    // responds: fail, fail, fail, ok, ok, fail
+
+
+
+
+
+
 
 Python:
 

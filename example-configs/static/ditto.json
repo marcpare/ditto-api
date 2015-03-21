@@ -1,0 +1,14 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/recipes",
+      "response": "recipes.json"
+    },
+    {
+      "method": "GET",
+      "path": "/recipes/:id",
+      "response": "recipe.json"
+    }
+  ]
+}

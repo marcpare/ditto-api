@@ -1,0 +1,22 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/recipes",
+      "param_handler": [
+        {
+          "params": {
+            "country": "Guatemala"
+          },
+          "response": "recipes-guatemala.json"
+        },
+        {
+          "params": {
+            "country": "Thailand"
+          },
+          "response": "recipes-thailand.json"          
+        }
+      ]
+    }
+  ]
+}
