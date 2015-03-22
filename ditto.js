@@ -2,18 +2,20 @@ var Hapi = require('hapi');
 var fs   = require('fs');
 var path = require('path');
 
-
 function Ditto (options) {
   options = options || {};
   if (!options.port) throw "Missing options.port";
   if (!options.config) throw "Missing config file location";
   
+  this.port = options.port;
   this.config = JSON.parse(fs.readFileSync(options.config));
   this.baseDir = path.dirname(options.config);
 }
 
-Ditto.prototype.relativeJSON = function (path) {
-  return JSON.parse(fs.readFileSync(path.join(this.baseDir, path)));
+Ditto.prototype.relativeJSON = function (jsonPath) {
+  var fullPath = path.join(this.baseDir, jsonPath);
+  var json = fs.readFileSync(fullPath);
+  return JSON.parse(json);
 };
 
 Ditto.prototype.addRoute = function (route) {
@@ -30,7 +32,7 @@ Ditto.prototype.addRoute = function (route) {
         var jsonPath = route.response;
         delete route.response;        
         route.handler = function (request, reply) {
-          return ditto.relativeJSON(jsonPath);
+          reply(ditto.relativeJSON(jsonPath));
         }
         ditto.server.route(route);
       }
