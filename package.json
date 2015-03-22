@@ -4,14 +4,18 @@
   "description": "Lightweight API mocking and virtualization",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap test/*.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/marcpare/ditto-api.git"
   },
-  "author": "Marc Paré",
-  "license": "ISC",
+  "author": {
+    "name": "Marc Paré",
+    "email": "marc@smallredtile.com",
+    "url": "http://www.smallredtile.com"
+  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/marcpare/ditto-api/issues"
   },
@@ -21,6 +25,8 @@
     "minimist": "1.1.1"
   },
   "devDependencies": {
-    "request": "2.53.0"
+    "request": "2.53.0",
+    "tap": "0.7.1",
+    "tape": "3.5.0"
   }
 }
