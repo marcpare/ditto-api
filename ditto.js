@@ -31,6 +31,7 @@ Ditto.prototype.addRoute = function (route) {
       addRoute: function (route) {
         var jsonPath = route.response;
         delete route.response;        
+        
         route.handler = function (request, reply) {
           reply(ditto.relativeJSON(jsonPath));
         }
@@ -61,6 +62,7 @@ Ditto.prototype.start = function () {
     host: 'localhost',
     port: this.port
   });
+  this.baseUrl = 'http://localhost:'+this.port+'/'
   this.processConfig();
   server.start();
 };

@@ -1,25 +1,35 @@
-var Ditto = require('../ditto');
+var DittoFactory = require('./ditto-factory');
 var request = require('request');
 var test = require('tape');
-var path = require('path');
 
-var ditto = new Ditto({
-  port: 34345,
-  config: path.join(__dirname, 'configs/static/ditto.json')
-});
-
-test('loads and responds to static routes', function (t) {   
+function basicTest (t, options) {
+  var ditto = DittoFactory({config: options.config});
   ditto.start();
-  request.get('http://localhost:34345/recipes', function (err, resp, body) {
-    t.deepEqual(body, {"status": "recipes"})
+  request({
+    method: options.method,
+    url: ditto.baseUrl+options.url,
+    json: true
+  }, function (err, resp, body) {
+    t.deepEqual(body, options.expect)
     ditto.stop();
     t.end();
   });
+}
+
+test('loads and responds to static routes', function (t) {
+  basicTest(t, {
+    config: 'configs/static/ditto.json',
+    method: 'get',
+    url: 'recipes',
+    expect: {"status": "recipes"}
+  });
 });
 
-// test('static route with param', function (t) {
-//   request.get('http://localhost:34345/recipes/1', function (err, resp, body) {
-//     t.deepEqual(body, {"status": "recipe"})
-//     t.end();
-//   });
-// });
+test('loads and responds to static routes with param', function (t) {   
+  basicTest(t, {
+    config: 'configs/static/ditto.json',
+    method: 'get',
+    url: 'recipes/1',
+    expect: {"status": "recipe"}
+  });
+});
