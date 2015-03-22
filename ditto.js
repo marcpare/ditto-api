@@ -65,4 +65,8 @@ Ditto.prototype.start = function () {
   server.start();
 };
 
+Ditto.prototype.stop = function () {
+  this.server.stop();
+};
+
 module.exports = Ditto;
