@@ -7,7 +7,7 @@
     },
     {
       "method": "GET",
-      "path": "/recipes/:id",
+      "path": "/recipes/{id}",
       "response": "recipe.json"
     }
   ]

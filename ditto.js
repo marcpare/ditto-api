@@ -1,6 +1,7 @@
 var Hapi = require('hapi');
 var fs   = require('fs');
 var path = require('path');
+var _    = require('underscore');
 
 function Ditto (options) {
   options = options || {};
@@ -33,7 +34,14 @@ Ditto.prototype.addRoute = function (route) {
         delete route.response;        
         
         route.handler = function (request, reply) {
-          reply(ditto.relativeJSON(jsonPath));
+
+          // Supported templated JSON filenames
+          // e.g. `"response": "recipe-<%=id%>.json"`
+          
+          jsonPath = _.template(jsonPath);
+          var resolvedPath = jsonPath(request.params);
+          
+          reply(ditto.relativeJSON(resolvedPath));
         }
         ditto.server.route(route);
       }

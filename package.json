@@ -22,7 +22,8 @@
   "homepage": "https://github.com/marcpare/ditto-api",
   "dependencies": {
     "hapi": "8.4.0",
-    "minimist": "1.1.1"
+    "minimist": "1.1.1",
+    "underscore": "^1.8.2"
   },
   "devDependencies": {
     "request": "2.53.0",
