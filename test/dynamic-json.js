@@ -41,6 +41,27 @@ test('loads another dynamic route', function (t) {
 
 });
 
+
+
+ditto.route({
+  method: "GET",
+  path: "/recipes",
+  response: 'recipes-{query.country}.json'
+});
+
+test('dynamic route for responding to query parameters', function (t) {
+  request({
+    method: 'get',
+    url: 'http://localhost:18000/recipes?country=guatemala',
+    json: true
+  }, function (err, resp, body) {
+    t.equal(body.recipes[0].name, "Pupusas");
+    t.end();
+  });
+});
+
+
+
 test('cleanup', function (t) {
   ditto.stop();
   t.end();

@@ -36,6 +36,8 @@ Ditto.prototype.relativeJSON = function (jsonPath) {
 // e.g. `"response": "recipe-{id}.json"`
 Ditto.prototype.jsonReply = function (request, reply, jsonPath) {
   var pathTemplate = _.template(jsonPath);
+  var data = request.params;
+  data.query = request.query; // pass the query object to the template, too
   var resolvedPath = pathTemplate(request.params);
   return reply(this.relativeJSON(resolvedPath));
 };
