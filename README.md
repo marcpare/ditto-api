@@ -18,7 +18,7 @@ Key features
 * Code over Configuration: hook in and write custom handlers if you need to
 * Not just static responses: define response sequences so that routes can behave differently across multiple calls
 
-
+```
     var ditto = new Ditto({
       port: 34345,
       baseDir: path.join(__dirname, 'json')
@@ -69,7 +69,7 @@ Key features
       },
       times: 2
     });  
-      
+```     
       
 Install
 ---
