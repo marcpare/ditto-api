@@ -19,56 +19,56 @@ Key features
 * Not just static responses: define response sequences so that routes can behave differently across multiple calls
 
 ```js
-    var ditto = new Ditto({
-      port: 34345,
-      baseDir: path.join(__dirname, 'json')
-    });
+var ditto = new Ditto({
+  port: 34345,
+  baseDir: path.join(__dirname, 'json')
+});
 
-    // return static JSON
-    ditto.route({
-      method: 'get',
-      path: '/recipes',
-      response: 'recipes.json'
-    });
+// return static JSON
+ditto.route({
+  method: 'get',
+  path: '/recipes',
+  response: 'recipes.json'
+});
 
-    // dynamic JSON filename
-    ditto.route({
-      method: 'get',
-      path: '/recipes/{id}',
-      response: 'recipe-{id}.json'
-    });
+// dynamic JSON filename
+ditto.route({
+  method: 'get',
+  path: '/recipes/{id}',
+  response: 'recipe-{id}.json'
+});
 
-    // works with query params, too
-    ditto.route({
-      method: 'get',
-      path: '/international-recipes',
-      response: 'recipes-{query.country}.json'
-    });
+// works with query params, too
+ditto.route({
+  method: 'get',
+  path: '/international-recipes',
+  response: 'recipes-{query.country}.json'
+});
 
-    // a custom handler
-    // notice the `jsonReply` helper
-    ditto.route({
-      method: "POST",
-      path: "/token",
-      handler: function (request, reply) {
-        if (request.payload.email === 'test@example.com' &&
-            request.payload.password === 'password') {
-          this.jsonReply('token.json');    
-        } else {
-          this.jsonReply('not-authorized.json').code(401);
-        }
-      }
-    });
-    
-    // simulate an unreliable connection for the next two requests
-    ditto.route({
-      method: "GET",
-      path: "/recipes",
-      handler: function (request, reply) {
-        reply({error:true}).code(404);
-      },
-      times: 2
-    });  
+// a custom handler
+// notice the `jsonReply` helper
+ditto.route({
+  method: "POST",
+  path: "/token",
+  handler: function (request, reply) {
+    if (request.payload.email === 'test@example.com' &&
+        request.payload.password === 'password') {
+      this.jsonReply('token.json');    
+    } else {
+      this.jsonReply('not-authorized.json').code(401);
+    }
+  }
+});
+
+// simulate an unreliable connection for the next two requests
+ditto.route({
+  method: "GET",
+  path: "/recipes",
+  handler: function (request, reply) {
+    reply({error:true}).code(404);
+  },
+  times: 2
+});  
 ```     
       
 Install
