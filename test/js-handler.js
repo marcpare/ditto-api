@@ -1,6 +1,6 @@
-var test = require('tape');
-var DittoFactory = require('./ditto-factory');
-var request = require('request');
+// var test = require('tape');
+// var DittoFactory = require('./ditto-factory');
+// var request = require('request');
 
 // var ditto = DittoFactory({
 //   config: 'configs/js-handler/ditto.json'

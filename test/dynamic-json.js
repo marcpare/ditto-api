@@ -1,5 +1,5 @@
-var test = require('tape');
-var basicTest = require('./basic-test');
+// var test = require('tape');
+// var basicTest = require('./basic-test');
 
 // test('loads a dynamic route', function (t) {
 //   basicTest(t, {
