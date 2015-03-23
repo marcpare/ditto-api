@@ -1,122 +1,83 @@
 ditto-api
 ===
 
-Lightweight library and client for creating fake APIs.
+Lightweight base for creating fake APIs with Node.
 
 ![splash](https://cloud.githubusercontent.com/assets/175162/6763987/4778d740-cf54-11e4-8813-6106bd7b74d0.gif)
+
+Use it to build out your front-end while the back-end is under development or unreliable.
+
+Use it to simulate unreliable connections.
+
+Use it to inspect actual request and response headers.
 
 Key features
 ---
 
-* Make real HTTP requests to a running server
+* Make real HTTP requests to a running Hapi server
+* Code over Configuration: hook in and write custom handlers if you need to
 * Not just static responses: define response sequences so that routes can behave differently across multiple calls
-* Controlled via HTTP so that you can use it from any language
-* Stateful interactions
 
-Use it to build out your front-end while the back-end is under development or unreliable.
-
-Use it to drive test scenarios that are too tricky for mocks and stubs:
-
-    var ditto = require('ditto-api');
-    ditto.start({
-      port: 12345,
-      config: 'config/ditto.json'
+    var ditto = new Ditto({
+      port: 34345,
+      baseDir: path.join(__dirname, 'json')
     });
-    
-    ditto.route("recipes-ingredients-fail.json", {
-      times: 1
+
+    // return static JSON
+    ditto.route({
+      method: 'get',
+      path: '/recipes',
+      response: 'recipes.json'
     });
-    
-    ditto.route("recipes-ingredients-ok.json", {
-      times: 1
+
+    // dynamic JSON filename
+    ditto.route({
+      method: 'get',
+      path: '/recipes/{id}',
+      response: 'recipe-{id}.json'
     });
-    
-    requests.get('http://localhost:12345/recipes/1/ingredients')
-      .response.code.should.be.equal(404);
-    
-    requests.get('http://localhost:12345/recipes/1/ingredients')
-      .response.code.should.be.equal(200);
 
-Configure responses with JSON or Javascript:
+    // works with query params, too
+    ditto.route({
+      method: 'get',
+      path: '/international-recipes',
+      response: 'recipes-{query.country}.json'
+    });
 
-    // token-handler.js
-
-    module.exports = function (request, reply) {
-      if (request.payload.email === 'test@example.json' &&
-          request.payload.password === 'password') {
-        jsonReply('token.json');
-      } else {
-        jsonReply('not-authorized.json', {code: 401});    
+    // a custom handler
+    // notice the `jsonReply` helper
+    ditto.route({
+      method: "POST",
+      path: "/token",
+      handler: function (request, reply) {
+        if (request.payload.email === 'test@example.com' &&
+            request.payload.password === 'password') {
+          this.jsonReply('token.json');    
+        } else {
+          this.jsonReply('not-authorized.json').code(401);
+        }
       }
-    };
-
-
+    });
+    
+    // simulate an unreliable connection for the next two requests
+    ditto.route({
+      method: "GET",
+      path: "/recipes",
+      handler: function (request, reply) {
+        reply({error:true}).code(404);
+      },
+      times: 2
+    });  
+      
 Install
 ---
 
-    npm install -g ditto-api
-
-Run
----
-
-    ditto-api -p 34567 -c ditto.json
-    
-Command line options
-
-* p (port): which port to bind the server to
-* c (config): server configuration file
-    
-
-Configure
----
-
-
-`handler`: Javascript file which is required and run as a handler.
-
-**Handler API**
-
-Handlers have access to some global convenience functions
-
-* `jsonReply(filename, options)`
-
-Examples
----
-
+    npm install ditto-api
 
 Test
 ---
+  
+    npm test
 
 
-Client API
----
-
-**Javascript**
-
-Loads a route from a JSON file (relative to the configuration file location). Overrides the handler for an existing route with the same method and path.
-
-    fakeApi.route("recipes-ingredients-fail.json");
-
-Options:
-
-`times`: Respond with the new route `times` number of times. Then revert to previous. Can stack up multiple calls like this.
-
-    fakeApi.route("recipes-ingredients-fail.json", {
-      times: 1
-    });
-    
-    fakeApi.route("recipes-ingredients-ok.json", {
-      times: 2
-    });
-    
-    fakeApi.route("recipes-ingredients-fail.json", {
-      times: 3
-    });
-    
-    // responds: fail, fail, fail, ok, ok, fail
-
-
-
-
-
-**Python**
 
