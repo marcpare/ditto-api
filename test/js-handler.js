@@ -42,7 +42,7 @@ ditto.route({
         request.payload.password === 'password') {
       this.jsonReply('token.json');    
     } else {
-      this.jsonReply('token.json', {code: 401});
+      this.jsonReply('not-authorized.json').code(401);
     }
   }
 });
@@ -57,6 +57,20 @@ test('js handler successful login', function (t) {
     }
   }, function (err, resp, body) {
     t.deepEqual(body, {token:"helloworldtoken"})
+    t.end();
+  });
+});
+
+test('js handler failed login', function (t) {
+  request({
+    method: 'post',
+    url: 'http://localhost:18000/token',
+    json: {
+      email: 'test@example.com',
+      password: 'incorrect password'
+    }
+  }, function (err, resp, body) {
+    t.equal(resp.statusCode, 401);
     t.end();
   });
 });

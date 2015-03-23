@@ -37,7 +37,7 @@ Ditto.prototype.relativeJSON = function (jsonPath) {
 Ditto.prototype.jsonReply = function (request, reply, jsonPath) {
   var pathTemplate = _.template(jsonPath);
   var resolvedPath = pathTemplate(request.params);
-  reply(this.relativeJSON(resolvedPath));
+  return reply(this.relativeJSON(resolvedPath));
 };
 
 var staticRouteAdder = {
@@ -67,12 +67,11 @@ var jsRouteAdder = {
       //    this.jsonReply('token.json')
       // 
       var handlerContext = {
-        jsonReply: function (jsonPath, options) {
-          ditto.jsonReply(request, reply, jsonPath);
+        jsonReply: function (jsonPath) {
+          return ditto.jsonReply(request, reply, jsonPath);
         }
       };
-      customHandler = customHandler.bind(handlerContext);
-      return customHandler(request, reply);
+      customHandler.call(handlerContext, request, reply);
     };
     ditto.server.route(route);
   }
