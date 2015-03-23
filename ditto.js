@@ -32,6 +32,14 @@ Ditto.prototype.relativeJSON = function (jsonPath) {
   return JSON.parse(json);
 };
 
+// Supports templated JSON filenames
+// e.g. `"response": "recipe-{id}.json"`
+Ditto.prototype.jsonReply = function (request, reply, jsonPath) {
+  var pathTemplate = _.template(jsonPath);
+  var resolvedPath = pathTemplate(request.params);
+  reply(this.relativeJSON(resolvedPath));
+};
+
 Ditto.prototype.route = function (route) {
   var ditto = this;
   
@@ -45,33 +53,33 @@ Ditto.prototype.route = function (route) {
       addRoute: function (route) {
         var jsonPath = route.response;
         delete route.response;
-        var pathTemplate = _.template(jsonPath);
-        
         route.handler = function (request, reply) {
-          // Supports templated JSON filenames
-          // e.g. `"response": "recipe-{id}.json"`
-          var resolvedPath = pathTemplate(request.params);
-          reply(ditto.relativeJSON(resolvedPath));
+          ditto.jsonReply(request, reply, jsonPath);          
         }
         ditto.server.route(route);
       }
     },
     {
       detect: function (route) {
-        return route.handler && /\.js$/.test(route.handler);
+        return route.handler;
       },
-      addRoute: function (route){
-        var handlerPath = ditto.relativePath(route.handler);
-        var handler = require(handlerPath);
-        var helpers = {
-          jsonReply: function (jsonPath) {
-            // TODO: call to static handler (need to factor out the static
-            //       handler so that I can make this call).
-          }
-        };
+      addRoute: function (route) {
+        var customHandler = route.handler;
         route.handler = function (request, reply) {
-          handler(request, reply, helpers);
+          // Custom context to provide helpers to the handler so that
+          // you can do things like:
+          //     
+          //    this.jsonReply('token.json')
+          // 
+          var handlerContext = {
+            jsonReply: function (jsonPath, options) {
+              ditto.jsonReply(request, reply, jsonPath);
+            }
+          };
+          customHandler = customHandler.bind(handlerContext);
+          return customHandler(request, reply);
         };
+        ditto.server.route(route);
       }
     }
   ];
