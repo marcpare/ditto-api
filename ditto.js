@@ -6,20 +6,29 @@ var _    = require('underscore');
 function Ditto (options) {
   options = options || {};
   if (!options.port) throw "Missing options.port";
-  if (!options.config) throw "Missing config file location";
-  
   this.port = options.port;
-  this.config = JSON.parse(fs.readFileSync(options.config));
-  this.baseDir = path.dirname(options.config);
+  this.baseDir = options.baseDir;
+  
+  var server = new Hapi.Server();
+  this.server = server;  
+  this.server.connection({
+    host: 'localhost',
+    port: this.port
+  });
+  this.baseUrl = 'http://localhost:'+this.port+'/'
+}
+
+Ditto.prototype.relativePath = function (p) {
+  return path.join(this.baseDir, p);
 }
 
 Ditto.prototype.relativeJSON = function (jsonPath) {
-  var fullPath = path.join(this.baseDir, jsonPath);
+  var fullPath = this.relativePath(jsonPath);
   var json = fs.readFileSync(fullPath);
   return JSON.parse(json);
 };
 
-Ditto.prototype.addRoute = function (route) {
+Ditto.prototype.route = function (route) {
   var ditto = this;
   
   // LATER: factor out the `addRoute` methods
@@ -45,6 +54,24 @@ Ditto.prototype.addRoute = function (route) {
         }
         ditto.server.route(route);
       }
+    },
+    {
+      detect: function (route) {
+        return route.handler && /\.js$/.test(route.handler);
+      },
+      addRoute: function (route){
+        var handlerPath = ditto.relativePath(route.handler);
+        var handler = require(handlerPath);
+        var helpers = {
+          jsonReply: function (jsonPath) {
+            // TODO: call to static handler (need to factor out the static
+            //       handler so that I can make this call).
+          }
+        };
+        route.handler = function (request, reply) {
+          handler(request, reply, helpers);
+        };
+      }
     }
   ];
   
@@ -64,15 +91,7 @@ Ditto.prototype.processConfig = function () {
 };
 
 Ditto.prototype.start = function () {
-  var server = new Hapi.Server();
-  this.server = server;  
-  server.connection({
-    host: 'localhost',
-    port: this.port
-  });
-  this.baseUrl = 'http://localhost:'+this.port+'/'
-  this.processConfig();
-  server.start();
+  this.server.start();
 };
 
 Ditto.prototype.stop = function () {

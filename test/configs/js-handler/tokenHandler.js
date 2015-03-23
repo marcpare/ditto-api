@@ -1,8 +1,8 @@
-module.exports = function (request, reply) {
+module.exports = function (request, reply, h) {
   if (request.payload.email === 'test@example.com' &&
       request.payload.password === 'password') {
-    jsonReply('token.json');
+    h.jsonReply('token.json');
   } else {
-    jsonReply('not-authorized.json', {code: 401});
+    h.jsonReply('not-authorized.json', {code: 401});
   }
 };
