@@ -1,9 +1,0 @@
-{
-  "routes": [
-    {
-      "method": "POST",
-      "path": "/token",
-      "handler": "tokenHandler.js"
-    }
-  ]
-}

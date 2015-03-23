@@ -1,9 +1,0 @@
-{
-  "routes": [
-    {
-      "method": "POST",
-      "path": "/recipes/{id}/ingredients",
-      "response": "recipes-ingredients-ok.json"
-    }
-  ]
-}
