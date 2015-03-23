@@ -16,7 +16,6 @@ ditto.route({
 });
 
 test('loads a dynamic route', function (t) {
-
   request({
     method: 'get',
     url: 'http://localhost:18000/recipes/1',
@@ -25,11 +24,9 @@ test('loads a dynamic route', function (t) {
     t.deepEqual(body, {status:"recipe1"})
     t.end();
   });
-
 });
 
 test('loads another dynamic route', function (t) {
-
   request({
     method: 'get',
     url: 'http://localhost:18000/recipes/2',
@@ -38,10 +35,7 @@ test('loads another dynamic route', function (t) {
     t.deepEqual(body, {status:"recipe2"})
     t.end();
   });
-
 });
-
-
 
 ditto.route({
   method: "GET",
@@ -59,8 +53,6 @@ test('dynamic route for responding to query parameters', function (t) {
     t.end();
   });
 });
-
-
 
 test('cleanup', function (t) {
   ditto.stop();
