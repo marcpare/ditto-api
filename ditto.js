@@ -40,16 +40,13 @@ Ditto.prototype.route = function (route) {
       },
       addRoute: function (route) {
         var jsonPath = route.response;
-        delete route.response;        
+        delete route.response;
+        var pathTemplate = _.template(jsonPath);
         
         route.handler = function (request, reply) {
-
           // Supported templated JSON filenames
           // e.g. `"response": "recipe-<%=id%>.json"`
-          
-          jsonPath = _.template(jsonPath);
-          var resolvedPath = jsonPath(request.params);
-          
+          var resolvedPath = pathTemplate(request.params);
           reply(ditto.relativeJSON(resolvedPath));
         }
         ditto.server.route(route);
