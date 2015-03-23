@@ -20,6 +20,8 @@ function Ditto (options) {
     port: this.port
   });
   this.baseUrl = 'http://localhost:'+this.port+'/'
+  
+  this.handlerStacks = {};
 }
 
 Ditto.prototype.relativePath = function (p) {
@@ -42,6 +44,48 @@ Ditto.prototype.jsonReply = function (request, reply, jsonPath) {
   return reply(this.relativeJSON(resolvedPath));
 };
 
+// Allows adding handlers to a route multiple times.
+// If the `times` parameter of the route is set, call
+// that handler that many times, then move on to the
+// next handler. (Useful for simulating unreliable
+// connections)
+Ditto.prototype.pushRoute = function (route) {
+  var ditto = this;
+  var times = route.times || -1;
+  delete route.times;
+  
+  var originalHandler = route.handler;
+  
+  var routeKey = route.method + " " + route.path;
+  var existing = true;
+  if (!ditto.handlerStacks[routeKey]) {
+    existing = false;
+    ditto.handlerStacks[routeKey] = []
+  }
+
+  var handler = function (request, reply) {
+    var stack = ditto.handlerStacks[routeKey];
+    var wrapper = stack[0];
+    wrapper.handler(request, reply);
+    if (wrapper.times) {
+      wrapper.times--;
+      if (wrapper.times === 0) {
+        stack.shift();
+      }
+    }
+    ditto.handlerStacks[routeKey] = stack;
+  };
+  
+  ditto.handlerStacks[routeKey].unshift({
+    handler: originalHandler,
+    times: times
+  });
+  
+  route.handler = handler;
+  
+  if (!existing) ditto.server.route(route);
+};
+
 var staticRouteAdder = {
   detect: function (route) {
     return route.response && /\.json$/.test(route.response);
@@ -52,7 +96,7 @@ var staticRouteAdder = {
     route.handler = function (request, reply) {
       ditto.jsonReply(request, reply, jsonPath);          
     }
-    ditto.server.route(route);
+    ditto.pushRoute(route);
   }
 };
 
@@ -75,7 +119,7 @@ var jsRouteAdder = {
       };
       customHandler.call(handlerContext, request, reply);
     };
-    ditto.server.route(route);
+    ditto.pushRoute(route);
   }
 };
 
