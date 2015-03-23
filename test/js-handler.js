@@ -30,7 +30,7 @@ var Ditto = require('../ditto');
 
 var ditto = new Ditto({
   port: 18000,
-  baseDir: path.join(__dirname, 'configs')
+  baseDir: path.join(__dirname, 'json')
 });
 ditto.start();
 
