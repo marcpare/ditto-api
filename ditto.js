@@ -3,6 +3,10 @@ var fs   = require('fs');
 var path = require('path');
 var _    = require('underscore');
 
+_.templateSettings = {
+  interpolate:  /\{(.+?)\}/g  
+};
+
 function Ditto (options) {
   options = options || {};
   if (!options.port) throw "Missing options.port";
@@ -44,8 +48,8 @@ Ditto.prototype.route = function (route) {
         var pathTemplate = _.template(jsonPath);
         
         route.handler = function (request, reply) {
-          // Supported templated JSON filenames
-          // e.g. `"response": "recipe-<%=id%>.json"`
+          // Supports templated JSON filenames
+          // e.g. `"response": "recipe-{id}.json"`
           var resolvedPath = pathTemplate(request.params);
           reply(ditto.relativeJSON(resolvedPath));
         }
